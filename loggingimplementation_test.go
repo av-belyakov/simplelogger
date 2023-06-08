@@ -46,7 +46,6 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 			ok := sl.WriteLoggingData("my error test message", "error")
 
 			_, err := os.ReadFile("logs/error.log")
-			//fmt.Println("Read file /logs/error.log:", data)
 
 			Expect(ok).Should(BeTrue())
 			Expect(err).ShouldNot(HaveOccurred())
