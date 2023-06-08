@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"simplelogger"
+	"github.com/av-belyakov/simplelogger"
 )
 
 var _ = Describe("Loggingimplementation", Ordered, func() {

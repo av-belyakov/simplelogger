@@ -1,4 +1,4 @@
-module simplelogger
+module github.com/av-belyakov/simplelogger
 
 go 1.20
 
