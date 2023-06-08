@@ -41,9 +41,11 @@ type MessageTypeData struct {
 }
 
 // SimpleLoggerSettings содержит параметры SimpleLogger
-// ootPath - основная директория приложения
+// rootDir - основная директория приложения
+// rootPath - полный путь до директории приложения
 // listMessageType - список типов сообщений
 type SimpleLoggerSettings struct {
+	rootDir         string
 	rootPath        string
 	listMessageType map[string]MessageTypeData
 }
@@ -79,7 +81,7 @@ func NewSimpleLogger(rootDir string, msgtsl []MessageTypeSettings) (SimpleLogger
 		return path, nil
 	}
 
-	sls := SimpleLoggerSettings{}
+	sls := SimpleLoggerSettings{rootDir: rootDir}
 	mtd := map[string]MessageTypeData{}
 	if rootDir == "" {
 		return sls, fmt.Errorf("the variable 'rootDir' is not definitely")
@@ -175,7 +177,10 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 
 	if mt.WritingStdout {
 		//пишем в stdout
-		os.Stdout.Write([]byte(str))
+		tns := strings.Split(time.Now().String(), " ")
+		dateTime := fmt.Sprintf("%s %s", tns[0], tns[1][:8])
+
+		os.Stdout.Write([]byte(fmt.Sprintf("%s - %s - %s - %s", dateTime, sls.rootDir, strings.ToUpper(typeLogFile), str)))
 	}
 
 	if mt.WritingFile {
