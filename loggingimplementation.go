@@ -95,7 +95,7 @@ func NewSimpleLogger(rootDir string, msgtsl []MessageTypeSettings) (SimpleLogger
 	sls.rootPath = rootPath
 
 	for _, v := range msgtsl {
-		pd := path.Join(v.PathDirectory, "/", v.DirectoryName)
+		pd := path.Join(v.PathDirectory, v.DirectoryName)
 		if v.PathDirectory == "" {
 			pd = path.Join(sls.rootPath, v.DirectoryName)
 		}
@@ -226,14 +226,8 @@ func (sls SimpleLoggerSettings) compressFile(tm string) {
 	timeNowUnix := time.Now().Unix()
 	fn := strings.Replace(tm, ".log", "_"+strconv.FormatInt(timeNowUnix, 10)+".gz", -1)
 
-	fmt.Println("func 'compressFile', tm = ", tm, " fn = ", fn)
-
-	//fileIn, err := os.Create(path.Join(cilf.locationLogDirectory, cilf.nameLogDirectory, fn))
 	fileIn, err := os.Create(fn)
 	if err != nil {
-
-		fmt.Println("func 'compressFile', 111 ERROR = ", err)
-
 		return
 	}
 	defer fileIn.Close()
@@ -241,20 +235,12 @@ func (sls SimpleLoggerSettings) compressFile(tm string) {
 	zw := gzip.NewWriter(fileIn)
 	zw.Name = fn
 
-	//fileOut, err := ioutil.ReadFile(path.Join(cilf.locationLogDirectory, cilf.nameLogDirectory, cilf.fileNameType[tm]))
-	//fileOut, err := ioutil.ReadFile(tm)
 	fileOut, err := os.ReadFile(tm)
 	if err != nil {
-
-		fmt.Println("func 'compressFile', 222 ERROR = ", err)
-
 		return
 	}
 
 	if _, err := zw.Write(fileOut); err != nil {
-
-		fmt.Println("func 'compressFile', 333 ERROR = ", err)
-
 		return
 	}
 
