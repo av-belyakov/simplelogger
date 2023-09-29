@@ -2,7 +2,6 @@ package simplelogger
 
 import (
 	"compress/gzip"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -103,14 +102,14 @@ func NewSimpleLogger(rootDir string, msgtsl []MessageTypeSettings) (SimpleLogger
 		if v.WritingFile {
 			if _, err := os.ReadDir(pd); err != nil {
 				if err := os.Mkdir(pd, 0777); err != nil {
-					return sls, errors.New("error: it is not possible to create a directory for log files")
+					return sls, err
 				}
 			}
 
 			fullfn := path.Join(pd, v.MsgTypeName+".log")
 			f, err := os.OpenFile(fullfn, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 			if err != nil {
-				return sls, fmt.Errorf("error: it is impossible to create a log file %s", fullfn)
+				return sls, err
 			}
 
 			l := log.New(f, "", log.LstdFlags)
