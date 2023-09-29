@@ -83,7 +83,7 @@ func NewSimpleLogger(rootDir string, msgtsl []MessageTypeSettings) (SimpleLogger
 	sls := SimpleLoggerSettings{rootDir: rootDir}
 	mtd := map[string]MessageTypeData{}
 	if rootDir == "" {
-		return sls, fmt.Errorf("the variable 'rootDir' is not definitely")
+		return sls, fmt.Errorf("the variable \"rootDir\" is not definitely")
 	}
 
 	rootPath, err := getRootPath(rootDir)
