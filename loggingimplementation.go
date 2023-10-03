@@ -179,7 +179,7 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 		tns := strings.Split(time.Now().String(), " ")
 		dateTime := fmt.Sprintf("%s %s", tns[0], tns[1][:8])
 
-		os.Stdout.Write([]byte(fmt.Sprintf("%s - %s - %s - %s", dateTime, sls.rootDir, strings.ToUpper(typeLogFile), str)))
+		os.Stdout.Write([]byte(fmt.Sprintf("%s - %s - %s - %s\n", dateTime, sls.rootDir, strings.ToUpper(typeLogFile), str)))
 	}
 
 	if mt.WritingFile {
