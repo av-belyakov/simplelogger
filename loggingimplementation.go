@@ -223,7 +223,7 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 
 func (sls SimpleLoggerSettings) compressFile(tm string) {
 	timeNowUnix := time.Now().Unix()
-	fn := strings.Replace(tm, ".log", "_"+strconv.FormatInt(timeNowUnix, 10)+"tar.gz", -1)
+	fn := strings.Replace(tm, ".log", "_"+strconv.FormatInt(timeNowUnix, 10)+".tar.gz", -1)
 
 	fileIn, err := os.Create(fn)
 	if err != nil {
