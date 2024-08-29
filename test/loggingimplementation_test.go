@@ -69,14 +69,14 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 		sl, err = slog.NewSimpleLogger(ctx, "simplelogger", listSettings)
 	})
 
-	Context("Тест 1. Проверяем работу логера", func() {
+	Context("Тест 1. Проверяем работу логера ", func() {
 		It("Должен быть успешно создан новый объект логера", func() {
 			Expect(err).ShouldNot(HaveOccurred())
 			Expect(sl.GetCountFileDescription()).Should(Equal(len(listSettings)))
 		})
 	})
 
-	Context("Тест 2. Проверяем запись сообщений в лог-файлы", func() {
+	Context("Тест 2. Проверяем запись сообщений в лог-файлы ", func() {
 		It("Должно быть записанно некоторое сообщение типа 'error'", func() {
 			ok := sl.WriteLoggingData("my ERROR test message", "error")
 			Expect(ok).Should(BeTrue())
