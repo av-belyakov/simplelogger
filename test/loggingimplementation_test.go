@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	slog "github.com/av-belyakov/simplelogger/cmd"
+	slog "github.com/av-belyakov/simplelogger"
 )
 
 var _ = Describe("Loggingimplementation", Ordered, func() {
