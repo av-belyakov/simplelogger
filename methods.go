@@ -42,6 +42,7 @@ func (sls *SimpleLoggerSettings) GetListTypeFiles() []string {
 func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool {
 	mt, ok := sls.ListMessageType[typeLogFile]
 	if !ok {
+
 		return false
 	}
 
@@ -54,10 +55,12 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLogFile)), sls.rootDir, str)))
 	}
 
-	if mt.WritingFile {
-		//пишем в файл
-		mt.LogDescription.Println(str)
+	if !mt.WritingFile {
+		return false
 	}
+
+	//пишем в файл
+	mt.LogDescription.Println(str)
 
 	fi, err := mt.FileDescription.Stat()
 	if err != nil {

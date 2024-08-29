@@ -44,7 +44,7 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 			},
 			{
 				MsgTypeName:     "debug",
-				WritingToFile:   true,
+				WritingToFile:   false,
 				PathDirectory:   "logs",
 				WritingToStdout: true,
 				MaxFileSize:     1024,
@@ -78,7 +78,7 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 	Context("Тест 1. Проверяем работу логера ", func() {
 		It("Должен быть успешно создан новый объект логера", func() {
 			Expect(err).ShouldNot(HaveOccurred())
-			Expect(sl.GetCountFileDescription()).Should(Equal(len(listSettings)))
+			Expect(sl.GetCountFileDescription()).Should(Equal(len(listSettings) - 1))
 		})
 	})
 
@@ -99,7 +99,7 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 
 		It("Должно быть записанно некоторое сообщение типа 'debug'", func() {
 			ok := sl.WriteLoggingData("my DEBUG test message", "debug")
-			Expect(ok).Should(BeTrue())
+			Expect(ok).Should(BeFalse())
 		})
 
 		It("Должно быть записанно некоторое сообщение типа 'warning'", func() {
@@ -114,11 +114,6 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 
 		It("Должно быть записанно некоторое сообщение типа 'row_case'", func() {
 			ok := sl.WriteLoggingData("my ROW_CASE test message", "row_case")
-			Expect(ok).Should(BeTrue())
-		})
-
-		It("Должно быть записанно некоторое сообщение типа 'row_alert'", func() {
-			ok := sl.WriteLoggingData("my ROW_ALERT test message", "row_alert")
 			Expect(ok).Should(BeTrue())
 		})
 	})

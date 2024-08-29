@@ -30,19 +30,6 @@ type Options struct {
 func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*SimpleLoggerSettings, error) {
 	const DEFAULT_MAX_SIZE = 1000000
 
-	/*
-		listType := [...]string{"INFO", "ERROR", "DEBUG", "WARNING", "CRITICAL"}
-		logTypeIsExist := func(str string) bool {
-			for _, v := range listType {
-				if strings.ToUpper(str) == v {
-					return true
-				}
-			}
-
-			return false
-		}
-	*/
-
 	getRootPath := func(rootDir string) (string, error) {
 		currentDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
@@ -87,18 +74,31 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 	}()
 
 	for _, v := range opt {
-		if !v.WritingToFile {
-			continue
-		}
+		msgTypeName := strings.ToLower(v.MsgTypeName)
 
 		pd := v.PathDirectory
 		if !strings.HasPrefix(pd, "/") {
 			pd = path.Join(sls.rootPath, v.PathDirectory)
 		}
 
-		//if !logTypeIsExist(v.MsgTypeName) {
-		//	return &sls, fmt.Errorf("the message type can only be one of the following types INFO, ERROR, DEBUG, WARNING, CRITICAL")
-		//}
+		maxFileSize := DEFAULT_MAX_SIZE
+		if v.MaxFileSize > 1000 {
+			maxFileSize = v.MaxFileSize
+		}
+
+		mtd[msgTypeName] = messageTypeData{
+			messageTypeSettings: messageTypeSettings{
+				WritingFile:   v.WritingToFile,
+				WritingStdout: v.WritingToStdout,
+				MaxFileSize:   maxFileSize,
+				MsgTypeName:   v.MsgTypeName,
+				PathDirectory: pd,
+			}}
+
+		if !v.WritingToFile {
+
+			continue
+		}
 
 		if _, err := os.ReadDir(pd); err != nil {
 			if err := os.Mkdir(pd, 0777); err != nil {
@@ -106,7 +106,6 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 			}
 		}
 
-		msgTypeName := strings.ToLower(v.MsgTypeName)
 		fullFileName := path.Join(pd, msgTypeName+".log")
 		f, err := os.OpenFile(fullFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
@@ -118,21 +117,12 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 			l.SetFlags(log.Lshortfile | log.LstdFlags)
 		}
 
-		if v.MaxFileSize < DEFAULT_MAX_SIZE {
-			v.MaxFileSize = DEFAULT_MAX_SIZE
-		}
+		if data, ok := mtd[msgTypeName]; ok {
+			data.FileName = fullFileName
+			data.FileDescription = f
+			data.LogDescription = l
 
-		mtd[msgTypeName] = messageTypeData{
-			messageTypeSettings: messageTypeSettings{
-				WritingFile:   v.WritingToFile,
-				WritingStdout: v.WritingToStdout,
-				MaxFileSize:   v.MaxFileSize,
-				MsgTypeName:   v.MsgTypeName,
-				PathDirectory: pd,
-			},
-			FileName:        fullFileName,
-			FileDescription: f,
-			LogDescription:  l,
+			mtd[msgTypeName] = data
 		}
 	}
 
