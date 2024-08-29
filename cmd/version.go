@@ -1,6 +1,6 @@
-package internal
+package simplelogger
 
 // GetVersion возвращает номер версии приложения
 func (sls SimpleLoggerSettings) GetVersion() string {
-	return "1.1.3"
+	return "1.1.4"
 }

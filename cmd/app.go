@@ -8,11 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-
-	"github.com/av-belyakov/simplelogger/internal"
 )
-
-const DEFAULT_MAX_SIZE = 1000000
 
 // Options настройки типов сообщений
 // WritingToFile - писать ли сообщения данного типа в файл
@@ -31,7 +27,9 @@ type Options struct {
 }
 
 // NewSimpleLogger создает новый логер
-func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*internal.SimpleLoggerSettings, error) {
+func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*SimpleLoggerSettings, error) {
+	const DEFAULT_MAX_SIZE = 1000000
+
 	listType := [...]string{"INFO", "ERROR", "DEBUG", "WARNING", "CRITICAL"}
 	logTypeIsExist := func(str string) bool {
 		for _, v := range listType {
@@ -67,8 +65,8 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*inter
 		return path, nil
 	}
 
-	sls := internal.SimpleLoggerSettings{RootDir: rootDir}
-	mtd := map[string]internal.MessageTypeData{}
+	sls := SimpleLoggerSettings{rootDir: rootDir}
+	mtd := map[string]messageTypeData{}
 	if rootDir == "" {
 		return &sls, fmt.Errorf("the variable \"rootDir\" is not definitely")
 	}
@@ -78,12 +76,12 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*inter
 		return &sls, err
 	}
 
-	sls.RootPath = rootPath
+	sls.rootPath = rootPath
 
 	go func() {
 		<-ctx.Done()
 
-		sls.ClosingFiles()
+		sls.closingFiles()
 	}()
 
 	for _, v := range opt {
@@ -93,7 +91,7 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*inter
 
 		pd := v.PathDirectory
 		if !strings.HasPrefix(pd, "/") {
-			pd = path.Join(sls.RootPath, v.PathDirectory)
+			pd = path.Join(sls.rootPath, v.PathDirectory)
 		}
 
 		if !logTypeIsExist(v.MsgTypeName) {
@@ -122,8 +120,8 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*inter
 			v.MaxFileSize = DEFAULT_MAX_SIZE
 		}
 
-		mtd[msgTypeName] = internal.MessageTypeData{
-			MessageTypeSettings: internal.MessageTypeSettings{
+		mtd[msgTypeName] = messageTypeData{
+			messageTypeSettings: messageTypeSettings{
 				WritingFile:   v.WritingToFile,
 				WritingStdout: v.WritingToStdout,
 				MaxFileSize:   v.MaxFileSize,

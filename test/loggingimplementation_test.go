@@ -10,13 +10,12 @@ import (
 	. "github.com/onsi/gomega"
 
 	slog "github.com/av-belyakov/simplelogger/cmd"
-	"github.com/av-belyakov/simplelogger/internal"
 )
 
 var _ = Describe("Loggingimplementation", Ordered, func() {
 	var (
 		err error
-		sl  *internal.SimpleLoggerSettings
+		sl  *slog.SimpleLoggerSettings
 
 		listSettings []slog.Options
 	)

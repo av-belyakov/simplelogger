@@ -1,11 +1,11 @@
-package internal
+package simplelogger
 
 import (
 	"log"
 	"os"
 )
 
-// MessageTypeSettings настройки типов сообщений
+// messageTypeSettings настройки типов сообщений
 // WritingFile - писать ли сообщения данного типа в файл
 // WritingStdout - писать ли сообщения данного типа в stdout
 // MsgTypeName - наименование типа сообщения
@@ -13,7 +13,7 @@ import (
 // PathDirectory - путь до директорий с лог-файлами, если в начале строки есть символ "/" то считается что директория создается от
 // 'корня' файловой системы, если символ "/" отсутствует в начале строки, то директория с логами будет создана в текущей директории
 // приложения
-type MessageTypeSettings struct {
+type messageTypeSettings struct {
 	WritingFile   bool
 	WritingStdout bool
 	MaxFileSize   int
@@ -25,8 +25,8 @@ type MessageTypeSettings struct {
 // FileName - наименование лог-файла
 // FileDescription - файловый дескриптор для записи файлов
 // LogDescription - дескриптор логов
-type MessageTypeData struct {
-	MessageTypeSettings
+type messageTypeData struct {
+	messageTypeSettings
 	FileName        string
 	FileDescription *os.File
 	LogDescription  *log.Logger
@@ -37,7 +37,7 @@ type MessageTypeData struct {
 // RootPath - полный путь до директории приложения
 // ListMessageType - список типов сообщений
 type SimpleLoggerSettings struct {
-	RootDir         string
-	RootPath        string
-	ListMessageType map[string]MessageTypeData
+	rootDir         string
+	rootPath        string
+	ListMessageType map[string]messageTypeData
 }

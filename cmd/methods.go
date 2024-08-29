@@ -1,4 +1,4 @@
-package internal
+package simplelogger
 
 import (
 	"compress/gzip"
@@ -18,12 +18,6 @@ const (
 	ansiBrightYellow  = "\033[93m"
 	ansiBrightMagenta = "\033[95m"
 )
-
-func (sls *SimpleLoggerSettings) ClosingFiles() {
-	for _, v := range sls.ListMessageType {
-		v.FileDescription.Close()
-	}
-}
 
 func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 	var num int
@@ -56,7 +50,7 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 		tns := strings.Split(time.Now().String(), " ")
 		dateTime := fmt.Sprintf("%s %s", tns[0], tns[1][:8])
 
-		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLogFile)), sls.RootDir, str)))
+		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLogFile)), sls.rootDir, str)))
 	}
 
 	if mt.WritingFile {
@@ -88,8 +82,8 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 		l.SetFlags(log.Lshortfile | log.LstdFlags)
 	}
 
-	sls.ListMessageType[typeLogFile] = MessageTypeData{
-		MessageTypeSettings: mt.MessageTypeSettings,
+	sls.ListMessageType[typeLogFile] = messageTypeData{
+		messageTypeSettings: mt.messageTypeSettings,
 		FileName:            mt.FileName,
 		FileDescription:     f,
 		LogDescription:      l,
@@ -121,6 +115,12 @@ func (sls SimpleLoggerSettings) compressFile(tm string) {
 	}
 
 	_ = zw.Close()
+}
+
+func (sls *SimpleLoggerSettings) closingFiles() {
+	for _, v := range sls.ListMessageType {
+		v.FileDescription.Close()
+	}
 }
 
 func getColorTypeMsg(msgType string) string {
