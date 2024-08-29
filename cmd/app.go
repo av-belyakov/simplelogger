@@ -14,8 +14,24 @@ import (
 
 const DEFAULT_MAX_SIZE = 1000000
 
+// Options настройки типов сообщений
+// WritingToFile - писать ли сообщения данного типа в файл
+// WritingToStdout - писать ли сообщения данного типа в stdout
+// MsgTypeName - наименование типа сообщения
+// MaxFileSize - максимальный размер файла, в байтах, при достижении которого выполняется архивирование сообщения (не менее 1000000)
+// PathDirectory - путь до директорий с лог-файлами, если в начале строки есть символ "/" то считается что директория создается от
+// 'корня' файловой системы, если символ "/" отсутствует в начале строки, то директория с логами будет создана в текущей директории
+// приложения
+type Options struct {
+	WritingToFile   bool
+	WritingToStdout bool
+	MaxFileSize     int
+	MsgTypeName     string
+	PathDirectory   string
+}
+
 // NewSimpleLogger создает новый логер
-func NewSimpleLogger(ctx context.Context, rootDir string, msgtsl []internal.MessageTypeSettings) (internal.SimpleLoggerSettings, error) {
+func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*internal.SimpleLoggerSettings, error) {
 	listType := [...]string{"INFO", "ERROR", "DEBUG", "WARNING", "CRITICAL"}
 	logTypeIsExist := func(str string) bool {
 		for _, v := range listType {
@@ -54,12 +70,12 @@ func NewSimpleLogger(ctx context.Context, rootDir string, msgtsl []internal.Mess
 	sls := internal.SimpleLoggerSettings{RootDir: rootDir}
 	mtd := map[string]internal.MessageTypeData{}
 	if rootDir == "" {
-		return sls, fmt.Errorf("the variable \"rootDir\" is not definitely")
+		return &sls, fmt.Errorf("the variable \"rootDir\" is not definitely")
 	}
 
 	rootPath, err := getRootPath(rootDir)
 	if err != nil {
-		return sls, err
+		return &sls, err
 	}
 
 	sls.RootPath = rootPath
@@ -70,8 +86,8 @@ func NewSimpleLogger(ctx context.Context, rootDir string, msgtsl []internal.Mess
 		sls.ClosingFiles()
 	}()
 
-	for _, v := range msgtsl {
-		if !v.WritingFile {
+	for _, v := range opt {
+		if !v.WritingToFile {
 			continue
 		}
 
@@ -81,12 +97,12 @@ func NewSimpleLogger(ctx context.Context, rootDir string, msgtsl []internal.Mess
 		}
 
 		if !logTypeIsExist(v.MsgTypeName) {
-			return sls, fmt.Errorf("the message type can only be one of the following types INFO, ERROR, DEBUG, WARNING, CRITICAL")
+			return &sls, fmt.Errorf("the message type can only be one of the following types INFO, ERROR, DEBUG, WARNING, CRITICAL")
 		}
 
 		if _, err := os.ReadDir(pd); err != nil {
 			if err := os.Mkdir(pd, 0777); err != nil {
-				return sls, err
+				return &sls, err
 			}
 		}
 
@@ -94,7 +110,7 @@ func NewSimpleLogger(ctx context.Context, rootDir string, msgtsl []internal.Mess
 		fullFileName := path.Join(pd, msgTypeName+".log")
 		f, err := os.OpenFile(fullFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
-			return sls, err
+			return &sls, err
 		}
 
 		l := log.New(f, "", log.LstdFlags)
@@ -108,11 +124,11 @@ func NewSimpleLogger(ctx context.Context, rootDir string, msgtsl []internal.Mess
 
 		mtd[msgTypeName] = internal.MessageTypeData{
 			MessageTypeSettings: internal.MessageTypeSettings{
-				MsgTypeName:   v.MsgTypeName,
-				WritingFile:   v.WritingFile,
-				PathDirectory: pd,
-				WritingStdout: v.WritingStdout,
+				WritingFile:   v.WritingToFile,
+				WritingStdout: v.WritingToStdout,
 				MaxFileSize:   v.MaxFileSize,
+				MsgTypeName:   v.MsgTypeName,
+				PathDirectory: pd,
 			},
 			FileName:        fullFileName,
 			FileDescription: f,
@@ -122,5 +138,5 @@ func NewSimpleLogger(ctx context.Context, rootDir string, msgtsl []internal.Mess
 
 	sls.ListMessageType = mtd
 
-	return sls, nil
+	return &sls, nil
 }

@@ -16,9 +16,9 @@ import (
 var _ = Describe("Loggingimplementation", Ordered, func() {
 	var (
 		err error
-		sl  internal.SimpleLoggerSettings
+		sl  *internal.SimpleLoggerSettings
 
-		listSettings []internal.MessageTypeSettings
+		listSettings []slog.Options
 	)
 
 	BeforeAll(func() {
@@ -28,41 +28,41 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 		//
 		//	ctxClose()
 		//}()
-		listSettings = []internal.MessageTypeSettings{
+		listSettings = []slog.Options{
 			{
-				MsgTypeName:   "error",
-				WritingFile:   true,
-				PathDirectory: "logs",
-				WritingStdout: true,
-				MaxFileSize:   1024,
+				MsgTypeName:     "error",
+				WritingToFile:   true,
+				PathDirectory:   "logs",
+				WritingToStdout: true,
+				MaxFileSize:     1024,
 			},
 			{
-				MsgTypeName:   "info",
-				WritingFile:   true,
-				PathDirectory: "logs",
-				WritingStdout: true,
-				MaxFileSize:   1024,
+				MsgTypeName:     "info",
+				WritingToFile:   true,
+				PathDirectory:   "logs",
+				WritingToStdout: true,
+				MaxFileSize:     1024,
 			},
 			{
-				MsgTypeName:   "debug",
-				WritingFile:   true,
-				PathDirectory: "logs",
-				WritingStdout: true,
-				MaxFileSize:   1024,
+				MsgTypeName:     "debug",
+				WritingToFile:   true,
+				PathDirectory:   "logs",
+				WritingToStdout: true,
+				MaxFileSize:     1024,
 			},
 			{
-				MsgTypeName:   "warning",
-				WritingFile:   true,
-				PathDirectory: "logs",
-				WritingStdout: true,
-				MaxFileSize:   1024,
+				MsgTypeName:     "warning",
+				WritingToFile:   true,
+				PathDirectory:   "logs",
+				WritingToStdout: true,
+				MaxFileSize:     1024,
 			},
 			{
-				MsgTypeName:   "CRITICAL",
-				WritingFile:   true,
-				PathDirectory: "logs",
-				WritingStdout: true,
-				MaxFileSize:   1024,
+				MsgTypeName:     "CRITICAL",
+				WritingToFile:   true,
+				PathDirectory:   "logs",
+				WritingToStdout: true,
+				MaxFileSize:     1024,
 			},
 		}
 
