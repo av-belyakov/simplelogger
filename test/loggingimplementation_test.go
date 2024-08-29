@@ -63,6 +63,13 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 				WritingToStdout: true,
 				MaxFileSize:     1024,
 			},
+			{
+				MsgTypeName:     "row_case",
+				WritingToFile:   true,
+				PathDirectory:   "logs",
+				WritingToStdout: true,
+				MaxFileSize:     1024,
+			},
 		}
 
 		sl, err = slog.NewSimpleLogger(ctx, "simplelogger", listSettings)
@@ -102,6 +109,11 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 
 		It("Должно быть записанно некоторое сообщение типа 'critical'", func() {
 			ok := sl.WriteLoggingData("my CRITICAL test message", "critical")
+			Expect(ok).Should(BeTrue())
+		})
+
+		It("Должно быть записанно некоторое сообщение типа 'row_case'", func() {
+			ok := sl.WriteLoggingData("my ROW_CASE test message", "row_case")
 			Expect(ok).Should(BeTrue())
 		})
 	})
