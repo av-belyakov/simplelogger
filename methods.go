@@ -45,7 +45,8 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 		return false
 	}
 
-	if mt.WritingStdout {
+	//в консоль выводим только следующие типы сообщений: INFO, ERROR, DEBUG, WARNING, CRITICAL
+	if mt.WritingStdout && logTypeIsExist(typeLogFile) {
 		//пишем в stdout
 		tns := strings.Split(time.Now().String(), " ")
 		dateTime := fmt.Sprintf("%s %s", tns[0], tns[1][:8])
@@ -121,6 +122,17 @@ func (sls *SimpleLoggerSettings) closingFiles() {
 	for _, v := range sls.ListMessageType {
 		v.FileDescription.Close()
 	}
+}
+
+func logTypeIsExist(str string) bool {
+	listType := [...]string{"INFO", "ERROR", "DEBUG", "WARNING", "CRITICAL"}
+	for _, v := range listType {
+		if strings.ToUpper(str) == v {
+			return true
+		}
+	}
+
+	return false
 }
 
 func getColorTypeMsg(msgType string) string {
