@@ -116,6 +116,11 @@ var _ = Describe("Loggingimplementation", Ordered, func() {
 			ok := sl.WriteLoggingData("my ROW_CASE test message", "row_case")
 			Expect(ok).Should(BeTrue())
 		})
+
+		It("Должно быть записанно некоторое сообщение типа 'row_alert'", func() {
+			ok := sl.WriteLoggingData("my ROW_ALERT test message", "row_alert")
+			Expect(ok).Should(BeTrue())
+		})
 	})
 
 	Context("Тест 3. Проверяем формирование правельной сторки сообщения отправляемого на stdout", func() {
