@@ -10,25 +10,9 @@ import (
 	"strings"
 )
 
-// Options настройки типов сообщений
-// WritingToFile - писать ли сообщения данного типа в файл
-// WritingToStdout - писать ли сообщения данного типа в stdout
-// MsgTypeName - наименование типа сообщения
-// MaxFileSize - максимальный размер файла, в байтах, при достижении которого выполняется архивирование сообщения (не менее 1000000)
-// PathDirectory - путь до директорий с лог-файлами, если в начале строки есть символ "/" то считается что директория создается от
-// 'корня' файловой системы, если символ "/" отсутствует в начале строки, то директория с логами будет создана в текущей директории
-// приложения
-type Options struct {
-	WritingToFile   bool
-	WritingToStdout bool
-	MaxFileSize     int
-	MsgTypeName     string
-	PathDirectory   string
-}
-
 // NewSimpleLogger создает новый логер
 func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*SimpleLoggerSettings, error) {
-	const DEFAULT_MAX_SIZE = 1000000
+	const DEFAULT_MAX_SIZE = 1_000_000
 
 	getRootPath := func(rootDir string) (string, error) {
 		currentDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -87,16 +71,15 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 		}
 
 		mtd[msgTypeName] = messageTypeData{
-			messageTypeSettings: messageTypeSettings{
-				WritingFile:   v.WritingToFile,
-				WritingStdout: v.WritingToStdout,
-				MaxFileSize:   maxFileSize,
-				MsgTypeName:   v.MsgTypeName,
-				PathDirectory: pd,
+			Options: Options{
+				WritingToFile:   v.WritingToFile,
+				WritingToStdout: v.WritingToStdout,
+				MaxFileSize:     maxFileSize,
+				MsgTypeName:     v.MsgTypeName,
+				PathDirectory:   pd,
 			}}
 
 		if !v.WritingToFile {
-
 			continue
 		}
 

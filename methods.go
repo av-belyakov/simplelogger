@@ -22,7 +22,7 @@ const (
 func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 	var num int
 	for _, v := range sls.ListMessageType {
-		if v.WritingFile {
+		if v.WritingToFile {
 			num++
 		}
 	}
@@ -47,7 +47,7 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 	}
 
 	//в консоль выводим только следующие типы сообщений: INFO, ERROR, DEBUG, WARNING, CRITICAL
-	if mt.WritingStdout && logTypeIsExist(typeLogFile) {
+	if mt.WritingToStdout && logTypeIsExist(typeLogFile) {
 		//пишем в stdout
 		tns := strings.Split(time.Now().String(), " ")
 		dateTime := fmt.Sprintf("%s %s", tns[0], tns[1][:8])
@@ -55,7 +55,7 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLogFile)), sls.rootDir, str)))
 	}
 
-	if !mt.WritingFile {
+	if !mt.WritingToFile {
 		return false
 	}
 
@@ -87,10 +87,10 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 	}
 
 	sls.ListMessageType[typeLogFile] = messageTypeData{
-		messageTypeSettings: mt.messageTypeSettings,
-		FileName:            mt.FileName,
-		FileDescription:     f,
-		LogDescription:      l,
+		Options:         mt.Options,
+		FileName:        mt.FileName,
+		FileDescription: f,
+		LogDescription:  l,
 	}
 
 	return true
