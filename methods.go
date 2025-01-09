@@ -10,15 +10,7 @@ import (
 	"time"
 )
 
-const (
-	ansiReset         = "\033[0m"
-	ansiBrightRed     = "\033[91m"
-	ansiBrightGreen   = "\033[92m"
-	ansiBrightWhite   = "\033[37m"
-	ansiBrightYellow  = "\033[93m"
-	ansiBrightMagenta = "\033[95m"
-)
-
+// GetCountFileDescription количество открытых файловых дескрипторов
 func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 	var num int
 	for _, v := range sls.ListMessageType {
@@ -30,6 +22,7 @@ func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 	return num
 }
 
+// GetListTypeFiles список типов файлов
 func (sls *SimpleLoggerSettings) GetListTypeFiles() []string {
 	list := make([]string, 0, len(sls.ListMessageType))
 	for _, v := range sls.ListMessageType {
@@ -39,20 +32,26 @@ func (sls *SimpleLoggerSettings) GetListTypeFiles() []string {
 	return list
 }
 
-func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool {
-	mt, ok := sls.ListMessageType[typeLogFile]
+// WriteData запись логов (в сигнатуре функции сначала идет ТИП сообщения, затем САМО сообщение)
+func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
+	mt, ok := sls.ListMessageType[typeLog]
 	if !ok {
 
 		return false
 	}
 
-	//в консоль выводим только следующие типы сообщений: INFO, ERROR, DEBUG, WARNING, CRITICAL
-	if mt.WritingToStdout && logTypeIsExist(typeLogFile) {
-		//пишем в stdout
-		tns := strings.Split(time.Now().String(), " ")
-		dateTime := fmt.Sprintf("%s %s", tns[0], tns[1][:8])
+	tns := strings.Split(time.Now().String(), " ")
+	dateTime := fmt.Sprintf("%s %s", tns[0], tns[1][:8])
 
-		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLogFile)), sls.rootDir, str)))
+	//в консоль выводим только следующие типы сообщений: INFO, ERROR, DEBUG, WARNING, CRITICAL
+	if mt.WritingToStdout && logTypeIsExist(typeLog) {
+		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLog)), sls.rootDir, msg)))
+	}
+
+	if mt.WritingToDB {
+		if err := sls.dataBaseInteraction.Write(typeLog, msg); err != nil {
+			os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg("DBI"), sls.rootDir, msg)))
+		}
 	}
 
 	if !mt.WritingToFile {
@@ -60,7 +59,7 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 	}
 
 	//пишем в файл
-	mt.LogDescription.Println(str)
+	mt.LogDescription.Println(msg)
 
 	fi, err := mt.FileDescription.Stat()
 	if err != nil {
@@ -86,7 +85,7 @@ func (sls *SimpleLoggerSettings) WriteLoggingData(str, typeLogFile string) bool 
 		l.SetFlags(log.Lshortfile | log.LstdFlags)
 	}
 
-	sls.ListMessageType[typeLogFile] = messageTypeData{
+	sls.ListMessageType[typeLog] = messageTypeData{
 		Options:         mt.Options,
 		FileName:        mt.FileName,
 		FileDescription: f,
@@ -125,37 +124,4 @@ func (sls *SimpleLoggerSettings) closingFiles() {
 	for _, v := range sls.ListMessageType {
 		v.FileDescription.Close()
 	}
-}
-
-func logTypeIsExist(str string) bool {
-	listType := [...]string{"INFO", "ERROR", "DEBUG", "WARNING", "CRITICAL"}
-	for _, v := range listType {
-		if strings.ToUpper(str) == v {
-			return true
-		}
-	}
-
-	return false
-}
-
-func getColorTypeMsg(msgType string) string {
-	switch msgType {
-	case "INFO":
-		return fmt.Sprintf("%vINF%v", ansiBrightGreen, ansiReset)
-
-	case "ERROR":
-		return fmt.Sprintf("%vERR%v", ansiBrightRed, ansiReset)
-
-	case "DEBUG":
-		return fmt.Sprintf("%vDBG%v", ansiBrightWhite, ansiReset)
-
-	case "WARNING":
-		return fmt.Sprintf("%vWARN%v", ansiBrightYellow, ansiReset)
-
-	case "CRITICAL":
-		return fmt.Sprintf("%vCRIT%v", ansiBrightMagenta, ansiReset)
-
-	}
-
-	return msgType
 }

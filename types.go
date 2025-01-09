@@ -7,6 +7,7 @@ import (
 
 // Options настройки типов сообщений
 type Options struct {
+	WritingToDB     bool   //писать ли сообщения данного типа в БД
 	WritingToFile   bool   //писать ли сообщения данного типа в файл
 	WritingToStdout bool   //писать ли сообщения данного типа в stdout
 	MaxFileSize     int    //максимальный размер файла, в байтах, при достижении которого выполняется архивирование сообщения (не менее 1000000)
@@ -24,7 +25,8 @@ type messageTypeData struct {
 
 // SimpleLoggerSettings содержит параметры SimpleLogger
 type SimpleLoggerSettings struct {
-	rootDir         string                     //основная директория приложения
-	rootPath        string                     //полный путь до директории приложения
-	ListMessageType map[string]messageTypeData //список типов сообщений
+	rootDir             string                     //основная директория приложения
+	rootPath            string                     //полный путь до директории приложения
+	dataBaseInteraction DataBaseInteractor         //интерфейс для взаимодействия с БД
+	ListMessageType     map[string]messageTypeData //список типов сообщений
 }

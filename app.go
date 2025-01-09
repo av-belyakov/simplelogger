@@ -6,40 +6,22 @@ import (
 	"log"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 )
 
 // NewSimpleLogger создает новый логер
-func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*SimpleLoggerSettings, error) {
-	const DEFAULT_MAX_SIZE = 1_000_000
+func NewSimpleLogger(
+	ctx context.Context,
+	rootDir string,
+	dbi DataBaseInteractor,
+	opt []Options) (*SimpleLoggerSettings, error) {
 
-	getRootPath := func(rootDir string) (string, error) {
-		currentDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-		if err != nil {
-			return "", err
-		}
-
-		tmp := strings.Split(currentDir, "/")
-
-		if tmp[len(tmp)-1] == rootDir {
-			return currentDir, nil
-		}
-
-		var path string = ""
-		for _, v := range tmp {
-			path += v + "/"
-
-			if v == rootDir {
-				return path, nil
-			}
-		}
-
-		return path, nil
+	sls := SimpleLoggerSettings{
+		rootDir:             rootDir,
+		dataBaseInteraction: dbi,
 	}
-
-	sls := SimpleLoggerSettings{rootDir: rootDir}
 	mtd := map[string]messageTypeData{}
+
 	if rootDir == "" {
 		return &sls, fmt.Errorf("the variable \"rootDir\" is not definitely")
 	}
