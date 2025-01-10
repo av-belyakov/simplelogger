@@ -60,7 +60,7 @@ func getColorTypeMsg(msgType string) string {
 		return fmt.Sprintf("%vCRIT%v", ansiBrightMagenta, ansiReset)
 
 	case "DBI":
-		return fmt.Sprintf("%v%v ERR DataBaseInteractor %v", ansiBackgroundCyan, ansiBrightBlack, ansiReset)
+		return fmt.Sprintf("%v%v ERR DataBaseInteractor %v", ansiBackgroundRed, ansiBrightBlack, ansiReset)
 
 	}
 

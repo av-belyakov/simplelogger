@@ -11,5 +11,5 @@ const (
 	ansiBrightYellow  = "\033[93m"
 	ansiBrightMagenta = "\033[95m"
 
-	ansiBackgroundCyan = "\033[106m"
+	ansiBackgroundRed = "\033[101m"
 )

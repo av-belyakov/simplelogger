@@ -2,6 +2,7 @@ package simplelogger_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -24,6 +25,7 @@ var (
 			PathDirectory:   "logs",
 			WritingToStdout: true,
 			MaxFileSize:     1024,
+			WritingToDB:     true,
 		},
 		{
 			MsgTypeName:     "info",
@@ -31,6 +33,7 @@ var (
 			PathDirectory:   "logs",
 			WritingToStdout: true,
 			MaxFileSize:     1024,
+			WritingToDB:     true,
 		},
 		{
 			MsgTypeName:     "debug",
@@ -70,14 +73,12 @@ func NewInteractionDB() *InteractionDB {
 }
 
 func (idb *InteractionDB) Write(msgType, msg string) error {
-	return nil
+	return errors.New("the database is not available")
 }
 
 func TestMain(m *testing.M) {
-	idb := NewInteractionDB()
-
 	ctx, _ /*ctxClose*/ := context.WithCancel(context.Background())
-	sl, err = slog.NewSimpleLogger(ctx, "simplelogger", idb, listSettings)
+	sl, err = slog.NewSimpleLogger(ctx, "simplelogger", listSettings)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -128,6 +129,16 @@ func TestLoggingImplementation(t *testing.T) {
 
 	t.Run("Тест 6. Проверяем запись сообщения типа 'row_case' в лог-файл", func(t *testing.T) {
 		ok := sl.Write("row_case", "my ROW_CASE test message")
+		assert.True(t, ok)
+	})
+
+	t.Run("Тест 7. Инициализация взаимодействия с БД", func(t *testing.T) {
+		sl.SetDataBaseInteraction(NewInteractionDB())
+
+		ok := sl.Write("error", "some description of the error")
+		assert.True(t, ok)
+
+		ok = sl.Write("info", "some description of the information message")
 		assert.True(t, ok)
 	})
 }

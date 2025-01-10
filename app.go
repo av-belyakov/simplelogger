@@ -10,16 +10,9 @@ import (
 )
 
 // NewSimpleLogger создает новый логер
-func NewSimpleLogger(
-	ctx context.Context,
-	rootDir string,
-	dbi DataBaseInteractor,
-	opt []Options) (*SimpleLoggerSettings, error) {
+func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*SimpleLoggerSettings, error) {
 
-	sls := SimpleLoggerSettings{
-		rootDir:             rootDir,
-		dataBaseInteraction: dbi,
-	}
+	sls := SimpleLoggerSettings{rootDir: rootDir}
 	mtd := map[string]messageTypeData{}
 
 	if rootDir == "" {
@@ -59,6 +52,7 @@ func NewSimpleLogger(
 				MaxFileSize:     maxFileSize,
 				MsgTypeName:     v.MsgTypeName,
 				PathDirectory:   pd,
+				WritingToDB:     v.WritingToDB,
 			}}
 
 		if !v.WritingToFile {

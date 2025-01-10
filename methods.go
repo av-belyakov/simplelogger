@@ -10,6 +10,11 @@ import (
 	"time"
 )
 
+// SetDataBaseInteraction устанавливает метод для взаимодействия с БД
+func (sls *SimpleLoggerSettings) SetDataBaseInteraction(dbi DataBaseInteractor) {
+	sls.dataBaseInteraction = dbi
+}
+
 // GetCountFileDescription количество открытых файловых дескрипторов
 func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 	var num int
@@ -48,7 +53,8 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLog)), sls.rootDir, msg)))
 	}
 
-	if mt.WritingToDB {
+	//запись сообщений в БД
+	if mt.WritingToDB && sls.dataBaseInteraction != nil {
 		if err := sls.dataBaseInteraction.Write(typeLog, msg); err != nil {
 			os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg("DBI"), sls.rootDir, msg)))
 		}
