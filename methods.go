@@ -41,7 +41,6 @@ func (sls *SimpleLoggerSettings) GetListTypeFiles() []string {
 func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 	mt, ok := sls.ListMessageType[typeLog]
 	if !ok {
-
 		return false
 	}
 
@@ -55,7 +54,11 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 
 	//запись сообщений в БД
 	if mt.WritingToDB && sls.dataBaseInteraction != nil {
+		fmt.Println("write to DB, message:", msg)
+
 		if err := sls.dataBaseInteraction.Write(typeLog, msg); err != nil {
+			fmt.Println("write to DB, error:", err)
+
 			os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg("DBI"), sls.rootDir, msg)))
 		}
 	}

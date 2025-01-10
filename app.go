@@ -47,12 +47,12 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 
 		mtd[msgTypeName] = messageTypeData{
 			Options: Options{
+				WritingToDB:     v.WritingToDB,
 				WritingToFile:   v.WritingToFile,
 				WritingToStdout: v.WritingToStdout,
 				MaxFileSize:     maxFileSize,
 				MsgTypeName:     v.MsgTypeName,
 				PathDirectory:   pd,
-				WritingToDB:     v.WritingToDB,
 			}}
 
 		if !v.WritingToFile {
