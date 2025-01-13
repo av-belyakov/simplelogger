@@ -52,6 +52,8 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLog)), sls.rootDir, msg)))
 	}
 
+	fmt.Println("logger message, typeLog:", typeLog, " mt.WritingToDB:", mt.WritingToDB, " sls.dataBaseInteraction:", sls.dataBaseInteraction)
+
 	//запись сообщений в БД
 	if mt.WritingToDB && sls.dataBaseInteraction != nil {
 		fmt.Println("write to DB, message:", msg)
