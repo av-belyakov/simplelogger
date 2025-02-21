@@ -18,9 +18,9 @@ type Options struct {
 // MessageTypeData содержит данные по типу сообщений
 type messageTypeData struct {
 	Options
-	FileName        string      //наименование лог-файла
-	FileDescription *os.File    //файловый дескриптор для записи файлов
-	LogDescription  *log.Logger //дескриптор логов
+	fileName        string      //наименование лог-файла
+	fileDescription *os.File    //файловый дескриптор для записи файлов
+	logDescription  *log.Logger //дескриптор логов
 }
 
 // SimpleLoggerSettings содержит параметры SimpleLogger
@@ -28,5 +28,5 @@ type SimpleLoggerSettings struct {
 	rootDir             string                     //основная директория приложения
 	rootPath            string                     //полный путь до директории приложения
 	dataBaseInteraction DataBaseInteractor         //интерфейс для взаимодействия с БД
-	ListMessageType     map[string]messageTypeData //список типов сообщений
+	listMessageType     map[string]messageTypeData //список типов сообщений
 }

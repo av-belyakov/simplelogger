@@ -18,7 +18,7 @@ func (sls *SimpleLoggerSettings) SetDataBaseInteraction(dbi DataBaseInteractor) 
 // GetCountFileDescription количество открытых файловых дескрипторов
 func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 	var num int
-	for _, v := range sls.ListMessageType {
+	for _, v := range sls.listMessageType {
 		if v.writingToFile {
 			num++
 		}
@@ -29,8 +29,8 @@ func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 
 // GetListTypeFiles список типов файлов
 func (sls *SimpleLoggerSettings) GetListTypeFiles() []string {
-	list := make([]string, 0, len(sls.ListMessageType))
-	for _, v := range sls.ListMessageType {
+	list := make([]string, 0, len(sls.listMessageType))
+	for _, v := range sls.listMessageType {
 		list = append(list, v.nameMessageType)
 	}
 
@@ -39,7 +39,11 @@ func (sls *SimpleLoggerSettings) GetListTypeFiles() []string {
 
 // WriteData запись логов (в сигнатуре функции сначала идет ТИП сообщения, затем САМО сообщение)
 func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
-	mt, ok := sls.ListMessageType[typeLog]
+	if sls.listMessageType == nil {
+		return false
+	}
+
+	mt, ok := sls.listMessageType[typeLog]
 	if !ok {
 		return false
 	}
@@ -64,9 +68,9 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 	}
 
 	//пишем в файл
-	mt.LogDescription.Println(msg)
+	mt.logDescription.Println(msg)
 
-	fi, err := mt.FileDescription.Stat()
+	fi, err := mt.fileDescription.Stat()
 	if err != nil {
 		return false
 	}
@@ -75,12 +79,12 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 		return true
 	}
 
-	mt.FileDescription.Close()
+	mt.fileDescription.Close()
 	//выполняем архивирование файла
-	sls.compressFile(mt.FileName)
+	sls.compressFile(mt.fileName)
 
-	_ = os.Remove(mt.FileName)
-	f, err := os.OpenFile(mt.FileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	_ = os.Remove(mt.fileName)
+	f, err := os.OpenFile(mt.fileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		return false
 	}
@@ -90,11 +94,11 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 		l.SetFlags(log.Lshortfile | log.LstdFlags)
 	}
 
-	sls.ListMessageType[typeLog] = messageTypeData{
+	sls.listMessageType[typeLog] = messageTypeData{
 		Options:         mt.Options,
-		FileName:        mt.FileName,
-		FileDescription: f,
-		LogDescription:  l,
+		fileName:        mt.fileName,
+		fileDescription: f,
+		logDescription:  l,
 	}
 
 	return true
@@ -126,7 +130,7 @@ func (sls SimpleLoggerSettings) compressFile(tm string) {
 }
 
 func (sls *SimpleLoggerSettings) closingFiles() {
-	for _, v := range sls.ListMessageType {
-		v.FileDescription.Close()
+	for _, v := range sls.listMessageType {
+		v.fileDescription.Close()
 	}
 }

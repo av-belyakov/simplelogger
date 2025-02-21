@@ -9,10 +9,14 @@ import (
 	"strings"
 )
 
-// NewSimpleLogger создает новый логер
+// NewSimpleLogger создаёт новый логер
 func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*SimpleLoggerSettings, error) {
-	sls := SimpleLoggerSettings{rootDir: rootDir}
-	mtd := map[string]messageTypeData{}
+	sls := SimpleLoggerSettings{
+		rootDir:         rootDir,
+		listMessageType: map[string]messageTypeData{},
+	}
+
+	//mtd := map[string]messageTypeData{}
 
 	if rootDir == "" {
 		return &sls, fmt.Errorf("the variable \"rootDir\" is not definitely")
@@ -44,7 +48,7 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 			maxFileSize = v.maxLogFileSize
 		}
 
-		mtd[msgTypeName] = messageTypeData{
+		sls.listMessageType[msgTypeName] = messageTypeData{
 			Options: Options{
 				writingToDB:     v.writingToDB,
 				writingToFile:   v.writingToFile,
@@ -75,16 +79,14 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 			l.SetFlags(log.Lshortfile | log.LstdFlags)
 		}
 
-		if data, ok := mtd[msgTypeName]; ok {
-			data.FileName = fullFileName
-			data.FileDescription = f
-			data.LogDescription = l
+		if data, ok := sls.listMessageType[msgTypeName]; ok {
+			data.fileName = fullFileName
+			data.fileDescription = f
+			data.logDescription = l
 
-			mtd[msgTypeName] = data
+			sls.listMessageType[msgTypeName] = data
 		}
 	}
-
-	sls.ListMessageType = mtd
 
 	return &sls, nil
 }
