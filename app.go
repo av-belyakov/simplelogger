@@ -11,20 +11,18 @@ import (
 
 // NewSimpleLogger создаёт новый логер
 func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*SimpleLoggerSettings, error) {
-	sls := SimpleLoggerSettings{
+	sls := &SimpleLoggerSettings{
 		rootDir:         rootDir,
 		listMessageType: map[string]messageTypeData{},
 	}
 
-	//mtd := map[string]messageTypeData{}
-
 	if rootDir == "" {
-		return &sls, fmt.Errorf("the variable \"rootDir\" is not definitely")
+		return sls, fmt.Errorf("the variable \"rootDir\" is not definitely")
 	}
 
 	rootPath, err := getRootPath(rootDir)
 	if err != nil {
-		return &sls, err
+		return sls, err
 	}
 
 	sls.rootPath = rootPath
@@ -64,14 +62,14 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 
 		if _, err := os.ReadDir(pd); err != nil {
 			if err := os.Mkdir(pd, 0777); err != nil {
-				return &sls, err
+				return sls, err
 			}
 		}
 
 		fullFileName := path.Join(pd, msgTypeName+".log")
 		f, err := os.OpenFile(fullFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
-			return &sls, err
+			return sls, err
 		}
 
 		l := log.New(f, "", log.LstdFlags)
@@ -88,7 +86,7 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 		}
 	}
 
-	return &sls, nil
+	return sls, nil
 }
 
 // CreateOptions создает список опций логирования
