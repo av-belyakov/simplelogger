@@ -39,10 +39,6 @@ func (sls *SimpleLoggerSettings) GetListTypeFiles() []string {
 
 // WriteData запись логов (в сигнатуре функции сначала идет ТИП сообщения, затем САМО сообщение)
 func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
-	if sls.listMessageType == nil {
-		return false
-	}
-
 	mt, ok := sls.listMessageType[typeLog]
 	if !ok {
 		return false
