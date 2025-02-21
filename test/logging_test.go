@@ -12,58 +12,14 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	slog "github.com/av-belyakov/simplelogger"
+	"github.com/av-belyakov/simplelogger/examples"
 )
 
 var (
-	sl  *slog.SimpleLoggerSettings
-	err error
+	sl           *slog.SimpleLoggerSettings
+	listSettings []slog.OptionsManager
 
-	listSettings []slog.Options = []slog.Options{
-		{
-			MsgTypeName:     "error",
-			WritingToFile:   true,
-			PathDirectory:   "logs",
-			WritingToStdout: true,
-			MaxFileSize:     1024,
-			WritingToDB:     true,
-		},
-		{
-			MsgTypeName:     "info",
-			WritingToFile:   true,
-			PathDirectory:   "logs",
-			WritingToStdout: true,
-			MaxFileSize:     1024,
-			WritingToDB:     true,
-		},
-		{
-			MsgTypeName:     "debug",
-			WritingToFile:   false,
-			PathDirectory:   "logs",
-			WritingToStdout: true,
-			MaxFileSize:     1024,
-		},
-		{
-			MsgTypeName:     "warning",
-			WritingToFile:   true,
-			PathDirectory:   "logs",
-			WritingToStdout: true,
-			MaxFileSize:     1024,
-		},
-		{
-			MsgTypeName:     "CRITICAL",
-			WritingToFile:   true,
-			PathDirectory:   "logs",
-			WritingToStdout: true,
-			MaxFileSize:     1024,
-		},
-		{
-			MsgTypeName:     "row_case",
-			WritingToFile:   true,
-			PathDirectory:   "logs",
-			WritingToStdout: true,
-			MaxFileSize:     1024,
-		},
-	}
+	err error
 )
 
 type InteractionDB struct{}
@@ -77,8 +33,64 @@ func (idb *InteractionDB) Write(msgType, msg string) error {
 }
 
 func TestMain(m *testing.M) {
+	opt := &examples.OptionForTest{}
+	opt.SetNameMessageType("error")
+	opt.SetMaxLogFileSize(1024)
+	opt.SetPathDirectory("logs")
+	opt.SetWritingStdout(true)
+	opt.SetWritingFile(true)
+	opt.SetWritingDB(true)
+	listSettings = append(listSettings, opt)
+
+	opt = &examples.OptionForTest{}
+	opt.SetNameMessageType("info")
+	opt.SetMaxLogFileSize(1024)
+	opt.SetPathDirectory("logs")
+	opt.SetWritingStdout(true)
+	opt.SetWritingFile(true)
+	opt.SetWritingDB(true)
+	listSettings = append(listSettings, opt)
+
+	opt = &examples.OptionForTest{}
+	opt.SetNameMessageType("debug")
+	opt.SetMaxLogFileSize(1024)
+	opt.SetPathDirectory("logs")
+	opt.SetWritingStdout(true)
+	opt.SetWritingFile(false)
+	opt.SetWritingDB(false)
+	listSettings = append(listSettings, opt)
+
+	opt = &examples.OptionForTest{}
+	opt.SetNameMessageType("warning")
+	opt.SetMaxLogFileSize(1024)
+	opt.SetPathDirectory("logs")
+	opt.SetWritingStdout(true)
+	opt.SetWritingFile(true)
+	opt.SetWritingDB(false)
+	listSettings = append(listSettings, opt)
+
+	opt = &examples.OptionForTest{}
+	opt.SetNameMessageType("CRITICAL")
+	opt.SetMaxLogFileSize(1024)
+	opt.SetPathDirectory("logs")
+	opt.SetWritingStdout(true)
+	opt.SetWritingFile(true)
+	opt.SetWritingDB(false)
+	listSettings = append(listSettings, opt)
+
+	opt = &examples.OptionForTest{}
+	opt.SetNameMessageType("row_case")
+	opt.SetMaxLogFileSize(1024)
+	opt.SetPathDirectory("logs")
+	opt.SetWritingStdout(true)
+	opt.SetWritingFile(true)
+	opt.SetWritingDB(false)
+	listSettings = append(listSettings, opt)
+
 	ctx, _ /*ctxClose*/ := context.WithCancel(context.Background())
-	sl, err = slog.NewSimpleLogger(ctx, "simplelogger", listSettings)
+	options := slog.CreateOptions(listSettings...)
+
+	sl, err = slog.NewSimpleLogger(ctx, "simplelogger", options)
 	if err != nil {
 		log.Fatalln(err)
 	}

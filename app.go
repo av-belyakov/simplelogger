@@ -11,7 +11,6 @@ import (
 
 // NewSimpleLogger создает новый логер
 func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*SimpleLoggerSettings, error) {
-
 	sls := SimpleLoggerSettings{rootDir: rootDir}
 	mtd := map[string]messageTypeData{}
 
@@ -33,29 +32,29 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 	}()
 
 	for _, v := range opt {
-		msgTypeName := strings.ToLower(v.MsgTypeName)
+		msgTypeName := strings.ToLower(v.nameMessageType)
 
-		pd := v.PathDirectory
+		pd := v.pathDirectory
 		if !strings.HasPrefix(pd, "/") {
-			pd = path.Join(sls.rootPath, v.PathDirectory)
+			pd = path.Join(sls.rootPath, v.pathDirectory)
 		}
 
 		maxFileSize := DEFAULT_MAX_SIZE
-		if v.MaxFileSize > 1000 {
-			maxFileSize = v.MaxFileSize
+		if v.maxLogFileSize > 1000 {
+			maxFileSize = v.maxLogFileSize
 		}
 
 		mtd[msgTypeName] = messageTypeData{
 			Options: Options{
-				WritingToDB:     v.WritingToDB,
-				WritingToFile:   v.WritingToFile,
-				WritingToStdout: v.WritingToStdout,
-				MaxFileSize:     maxFileSize,
-				MsgTypeName:     v.MsgTypeName,
-				PathDirectory:   pd,
+				writingToDB:     v.writingToDB,
+				writingToFile:   v.writingToFile,
+				writingToStdout: v.writingToStdout,
+				maxLogFileSize:  maxFileSize,
+				nameMessageType: v.nameMessageType,
+				pathDirectory:   pd,
 			}}
 
-		if !v.WritingToFile {
+		if !v.writingToFile {
 			continue
 		}
 
@@ -72,7 +71,7 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 		}
 
 		l := log.New(f, "", log.LstdFlags)
-		if v.MsgTypeName == "error" {
+		if v.nameMessageType == "error" {
 			l.SetFlags(log.Lshortfile | log.LstdFlags)
 		}
 
@@ -88,4 +87,22 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 	sls.ListMessageType = mtd
 
 	return &sls, nil
+}
+
+// CreateOptions создает список опций логирования
+func CreateOptions(rawOpt ...OptionsManager) []Options {
+	options := make([]Options, 0, len(rawOpt))
+
+	for _, v := range rawOpt {
+		options = append(options, Options{
+			writingToStdout: v.GetWritingStdout(),
+			writingToFile:   v.GetWritingFile(),
+			writingToDB:     v.GetWritingDB(),
+			nameMessageType: v.GetNameMessageType(),
+			pathDirectory:   v.GetPathDirectory(),
+			maxLogFileSize:  v.GetMaxLogFileSize(),
+		})
+	}
+
+	return options
 }

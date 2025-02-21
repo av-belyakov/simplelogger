@@ -19,7 +19,7 @@ func (sls *SimpleLoggerSettings) SetDataBaseInteraction(dbi DataBaseInteractor) 
 func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 	var num int
 	for _, v := range sls.ListMessageType {
-		if v.WritingToFile {
+		if v.writingToFile {
 			num++
 		}
 	}
@@ -31,7 +31,7 @@ func (sls *SimpleLoggerSettings) GetCountFileDescription() int {
 func (sls *SimpleLoggerSettings) GetListTypeFiles() []string {
 	list := make([]string, 0, len(sls.ListMessageType))
 	for _, v := range sls.ListMessageType {
-		list = append(list, v.MsgTypeName)
+		list = append(list, v.nameMessageType)
 	}
 
 	return list
@@ -48,18 +48,18 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 	dateTime := fmt.Sprintf("%s %s", tns[0], tns[1][:8])
 
 	//в консоль выводим только следующие типы сообщений: INFO, ERROR, DEBUG, WARNING, CRITICAL
-	if mt.WritingToStdout && logTypeIsExist(typeLog) {
+	if mt.writingToStdout && logTypeIsExist(typeLog) {
 		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLog)), sls.rootDir, msg)))
 	}
 
 	//запись сообщений в БД
-	if mt.WritingToDB && sls.dataBaseInteraction != nil {
+	if mt.writingToDB && sls.dataBaseInteraction != nil {
 		if err := sls.dataBaseInteraction.Write(typeLog, msg); err != nil {
 			os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg("DBI"), sls.rootDir, err.Error())))
 		}
 	}
 
-	if !mt.WritingToFile {
+	if !mt.writingToFile {
 		return false
 	}
 
@@ -71,7 +71,7 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 		return false
 	}
 
-	if fi.Size() <= int64(mt.MaxFileSize) {
+	if fi.Size() <= int64(mt.maxLogFileSize) {
 		return true
 	}
 
@@ -86,7 +86,7 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 	}
 
 	l := log.New(f, "", log.LstdFlags)
-	if mt.MsgTypeName == "error" {
+	if mt.nameMessageType == "error" {
 		l.SetFlags(log.Lshortfile | log.LstdFlags)
 	}
 
