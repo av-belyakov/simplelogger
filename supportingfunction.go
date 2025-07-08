@@ -45,22 +45,22 @@ func logTypeIsExist(str string) bool {
 func getColorTypeMsg(msgType string) string {
 	switch msgType {
 	case "INFO":
-		return fmt.Sprintf("%vINF%v", ansiBrightGreen, ansiReset)
+		return fmt.Sprintf("%vINF%v", AnsiBrightGreen, AnsiReset)
 
 	case "ERROR":
-		return fmt.Sprintf("%vERR%v", ansiBrightRed, ansiReset)
+		return fmt.Sprintf("%vERR%v", AnsiBrightRed, AnsiReset)
 
 	case "DEBUG":
-		return fmt.Sprintf("%vDBG%v", ansiBrightWhite, ansiReset)
+		return fmt.Sprintf("%vDBG%v", AnsiBrightWhite, AnsiReset)
 
 	case "WARNING":
-		return fmt.Sprintf("%vWARN%v", ansiBrightYellow, ansiReset)
+		return fmt.Sprintf("%vWARN%v", AnsiBrightYellow, AnsiReset)
 
 	case "CRITICAL":
-		return fmt.Sprintf("%vCRIT%v", ansiBrightMagenta, ansiReset)
+		return fmt.Sprintf("%vCRIT%v", AnsiBrightMagenta, AnsiReset)
 
 	case "DBI":
-		return fmt.Sprintf("%v%v ERR DataBaseInteractor %v", ansiBackgroundRed, ansiBrightBlack, ansiReset)
+		return fmt.Sprintf("%v%v ERR DataBaseInteractor %v", AnsiBackgroundRed, AnsiBrightBlack, AnsiReset)
 
 	}
 

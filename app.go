@@ -41,7 +41,7 @@ func NewSimpleLogger(ctx context.Context, rootDir string, opt []Options) (*Simpl
 			pd = path.Join(sls.rootPath, v.pathDirectory)
 		}
 
-		maxFileSize := DEFAULT_MAX_SIZE
+		maxFileSize := DefaultMaxSize
 		if v.maxLogFileSize > 1000 {
 			maxFileSize = v.maxLogFileSize
 		}

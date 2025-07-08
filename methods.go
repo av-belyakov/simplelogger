@@ -49,13 +49,13 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 
 	//в консоль выводим только следующие типы сообщений: INFO, ERROR, DEBUG, WARNING, CRITICAL
 	if mt.writingToStdout && logTypeIsExist(typeLog) {
-		os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLog)), sls.rootDir, msg)))
+		fmt.Fprintf(os.Stdout, "%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLog)), sls.rootDir, msg)
 	}
 
 	//запись сообщений в БД
 	if mt.writingToDB && sls.dataBaseInteraction != nil {
 		if err := sls.dataBaseInteraction.Write(typeLog, msg); err != nil {
-			os.Stdout.Write([]byte(fmt.Sprintf("%s %s - %s - %s\n", dateTime, getColorTypeMsg("DBI"), sls.rootDir, err.Error())))
+			fmt.Fprintf(os.Stdout, "%s %s - %s - %s\n", dateTime, getColorTypeMsg("DBI"), sls.rootDir, err.Error())
 		}
 	}
 
@@ -102,7 +102,7 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 
 func (sls SimpleLoggerSettings) compressFile(tm string) {
 	timeNowUnix := time.Now().Unix()
-	fn := strings.Replace(tm, ".log", "_"+strconv.FormatInt(timeNowUnix, 10)+".gz", -1)
+	fn := strings.ReplaceAll(tm, ".log", "_"+strconv.FormatInt(timeNowUnix, 10)+".gz")
 
 	fileIn, err := os.Create(fn)
 	if err != nil {
