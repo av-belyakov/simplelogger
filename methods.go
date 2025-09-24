@@ -64,7 +64,7 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 	}
 
 	//пишем в файл
-	mt.logDescription.Println(msg)
+	mt.logDescription.Printf("%s %s", typeLog, msg)
 
 	fi, err := mt.fileDescription.Stat()
 	if err != nil {
