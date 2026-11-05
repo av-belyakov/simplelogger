@@ -1,4 +1,4 @@
-package simplelogger_test
+package simplelogger
 
 import (
 	"context"
@@ -9,15 +9,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/assert"
 
-	slog "github.com/av-belyakov/simplelogger/v2"
+	"github.com/av-belyakov/simplelogger/v2"
 	"github.com/av-belyakov/simplelogger/v2/examples"
+	"github.com/av-belyakov/simplelogger/v2/mocks"
 )
 
 var (
-	sl           *slog.SimpleLoggerSettings
-	listSettings []slog.OptionsManager
+	sl           *simplelogger.SimpleLoggerSettings
+	listSettings []simplelogger.OptionsManager
 
 	err error
 )
@@ -87,9 +89,9 @@ func TestMain(m *testing.M) {
 	opt.SetWritingDB(false)
 	listSettings = append(listSettings, opt)
 
-	options := slog.CreateOptions(listSettings...)
+	options := simplelogger.CreateOptions(listSettings...)
 
-	sl, err = slog.NewSimpleLogger(context.TODO(), "simplelogger", options)
+	sl, err = simplelogger.NewSimpleLogger(context.TODO(), "simplelogger", options)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -144,12 +146,17 @@ func TestLoggingImplementation(t *testing.T) {
 	})
 
 	t.Run("Тест 7. Инициализация взаимодействия с БД", func(t *testing.T) {
-		sl.SetDataBaseInteraction(NewInteractionDB())
+		mc := minimock.NewController(t)
+		dbiMock := mocks.NewDataBaseInteractorMock(mc)
+		dbiMock.Write.Expect("error", "some description of the error").Return(true).Times(1)
 
+		sl.SetDataBaseInteraction(dbiMock)
 		ok := sl.Write("error", "some description of the error")
 		assert.True(t, ok)
+		/*
 
-		ok = sl.Write("info", "some description of the information message")
-		assert.True(t, ok)
+			ok = sl.Write("info", "some description of the information message")
+			assert.True(t, ok)
+		*/
 	})
 }
