@@ -55,7 +55,7 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 	//запись сообщений в БД
 	if mt.writingToDB && sls.dataBaseInteraction != nil {
 		if err := sls.dataBaseInteraction.Write(typeLog, msg); err != nil {
-			fmt.Fprintf(os.Stdout, "%s %s - %s - %s\n", dateTime, getColorTypeMsg("DBI"), sls.rootDir, err.Error())
+			fmt.Fprintf(os.Stdout, "%s %s - %s\n", dateTime, getColorTypeMsg("DBI"), err.Error())
 		}
 	}
 
