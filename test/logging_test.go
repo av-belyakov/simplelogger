@@ -11,8 +11,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	slog "github.com/av-belyakov/simplelogger"
-	"github.com/av-belyakov/simplelogger/examples"
+	slog "github.com/av-belyakov/simplelogger/v2"
+	"github.com/av-belyakov/simplelogger/v2/examples"
 )
 
 var (
@@ -87,10 +87,9 @@ func TestMain(m *testing.M) {
 	opt.SetWritingDB(false)
 	listSettings = append(listSettings, opt)
 
-	ctx, _ /*ctxClose*/ := context.WithCancel(context.Background())
 	options := slog.CreateOptions(listSettings...)
 
-	sl, err = slog.NewSimpleLogger(ctx, "simplelogger", options)
+	sl, err = slog.NewSimpleLogger(context.TODO(), "simplelogger", options)
 	if err != nil {
 		log.Fatalln(err)
 	}
