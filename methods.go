@@ -49,7 +49,7 @@ func (sls *SimpleLoggerSettings) Write(typeLog, msg string) bool {
 
 	//в консоль выводим только следующие типы сообщений: INFO, ERROR, DEBUG, WARNING, CRITICAL
 	if mt.writingToStdout && logTypeIsExist(typeLog) {
-		fmt.Fprintf(os.Stdout, "%s %s - %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLog)), sls.rootDir, msg)
+		fmt.Fprintf(os.Stdout, "%s %s - %s\n", dateTime, getColorTypeMsg(strings.ToUpper(typeLog)), msg)
 	}
 
 	//запись сообщений в БД
