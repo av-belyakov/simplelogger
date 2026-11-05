@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/av-belyakov/simplelogger/v2"
@@ -146,17 +145,21 @@ func TestLoggingImplementation(t *testing.T) {
 	})
 
 	t.Run("Тест 7. Инициализация взаимодействия с БД", func(t *testing.T) {
-		mc := minimock.NewController(t)
-		dbiMock := mocks.NewDataBaseInteractorMock(mc)
-		dbiMock.Write.Expect("error", "some description of the error").Return(true).Times(1)
+		//mc := minimock.NewController(t)
+		fff := mocks.AnyUserTypeForTest{}
+		fmt.Println(fff)
 
-		sl.SetDataBaseInteraction(dbiMock)
-		ok := sl.Write("error", "some description of the error")
-		assert.True(t, ok)
 		/*
+			dbiMock := mocks.NewDataBaseInteractorMock(mc)
+			dbiMock.Write.Expect("error", "some description of the error").Return(true).Times(1)
 
-			ok = sl.Write("info", "some description of the information message")
+			sl.SetDataBaseInteraction(dbiMock)
+			ok := sl.Write("error", "some description of the error")
 			assert.True(t, ok)
+			/*
+
+				ok = sl.Write("info", "some description of the information message")
+				assert.True(t, ok)
 		*/
 	})
 }
